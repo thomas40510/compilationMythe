@@ -16,14 +16,18 @@ class DictRegex
   def nb_match(regex)
     @data.select { |word| word =~ regex }.size
   end
+
+  def matches(regex)
+    @data.select { |word| word =~ regex }
+  end
 end
 
 
 r = DictRegex.new('td/td1/dictionary.txt')
 
-regex1 = /(ion)/
+regex1 = /\w*(ion)$/
 puts "Number of words matching #{regex1.inspect} is #{r.nb_match(regex1)}"
 
-regex2 = /(at)[^tri]/
+regex2 = /(at)[^rti]/
 puts "Number of words matching #{regex2.inspect} is #{r.nb_match(regex2)}"
 

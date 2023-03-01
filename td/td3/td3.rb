@@ -9,8 +9,9 @@ module Statement
     @left = left
     @op = op
     @right = right
-    super()
   end
+
+  attr_reader :left, :op, :right
 
   def raw
     className = self.class.name
@@ -25,22 +26,65 @@ end
 
 
 class IfStatement
+  include Statement
   def initialize(condition, body, else_content = nil)
     @condition = condition
     @body = body
     @else_content = else_content
   end
 
-  def condition
-    @condition
-  end
-
-  def body
-    @body
-  end
+  attr_reader :condition, :body, :else_content
 
   def to_s
     "if (#{@condition}) { #{@body} }" + (@else_content.nil? ? '' : " else { #{@else_content} }")
+  end
+
+  def raw
+    if @else_content.nil?
+      { self.class.name => {
+        condition: (@condition.is_a?(Expr) ? @condition.raw : @condition),
+        body: @body.raw
+      } }
+    else
+      { self.class.name => {
+        condition: (@condition.is_a?(Expr) ? @condition.raw : @condition),
+        body: @body.raw,
+        else: @else_content.raw
+      } }
+    end
+  end
+end
+
+class ElseStatement
+  include Statement
+
+  def initialize(body)
+    @body = body
+  end
+
+  def to_s
+    "else { #{@body} }"
+  end
+
+  def raw
+    { else: @body.raw }
+  end
+end
+
+class WhileStatement
+  include Statement
+
+  def initialize(condition, body)
+    @condition = condition
+    @body = body
+  end
+
+  def to_s
+    "while (#{@condition}) { #{@body} }"
+  end
+
+  def raw
+    { while: { condition: (@condition.is_a?(Expr) ? @condition.raw : @condition), body: @body.raw } }
   end
 end
 
@@ -83,17 +127,25 @@ class AST
   def statements_as_tree
     res = []
     @statements.each do |statement|
-      # add as {statement: {condition: {left: 'a', right: 'b'}, body: {var: 'Y', value: 'X'}}}
-      res << { statement: statement.condition.raw, body: statement.body.raw }
+      res << { statement.class.name => statement.raw } unless statement.nil?
     end
     res
   end
 end
 
-code = 'if (a == b) { Y = X; }'
+
+code1 = 'if (a == b) { Y = X; }'
+code2 = 'if (a > b) { Y = X; } else { Y = Z; }'
+code3 = 'X = Y; while(true){ if(a == b){ x = y; } else { y = x; } }'
 
 ast = AST.new
 ast.add_statement(IfStatement.new(Expr.new('a', '==', 'b'), AssignStatement.new('Y', '=', 'X')))
+ast.add_statement(IfStatement.new(Expr.new('a', '>', 'b'),
+                                  AssignStatement.new('Y', '=', 'X'),
+                                  ElseStatement.new(AssignStatement.new('Y', '=', 'Z'))))
+ast.add_statement(AssignStatement.new('X', '=', 'Y'))
+ast.add_statement(WhileStatement.new('true', IfStatement.new(Expr.new('a', '==', 'b'),
+                                                             AssignStatement.new('x', '=', 'y'),
+                                                             ElseStatement.new(AssignStatement.new('y', '=', 'x')))))
 
-puts ast.get_statements
 puts ast.statements_as_tree

@@ -5,8 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5cbf5040-cdbe-4450-a34d-815bc62d1382" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/td/td1/lexer.rb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/td/td1/td1.rb" beforeDir="false" afterPath="$PROJECT_DIR$/td/td1/td1.rb" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -64,7 +64,7 @@
       <workItem from="1674662898656" duration="1695000" />
       <workItem from="1674828018947" duration="22000" />
       <workItem from="1675255165962" duration="3064000" />
-      <workItem from="1675258455891" duration="879000" />
+      <workItem from="1675258455891" duration="1750000" />
     </task>
     <servers />
   </component>
